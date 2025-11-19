@@ -1,0 +1,26 @@
+services:
+  blue-app:
+    build:
+      context: .
+      dockerfile: docker/blue/Dockerfile
+    container_name: blue-app
+    ports:
+      - "127.0.0.1:8081:80"   # Solo accesible desde la máquina host
+    restart: unless-stopped
+    networks:
+      - frontend
+
+  green-app:
+    build:
+      context: .
+      dockerfile: docker/green/Dockerfile
+    container_name: green-app
+    ports:
+      - "127.0.0.1:8082:80"   # Igual, solo host
+    restart: unless-stopped
+    networks:
+      - frontend
+
+networks:
+  frontend:
+    driver: bridge
