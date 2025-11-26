@@ -1,0 +1,57 @@
+name: Blue-Green Deployment
+
+on:
+  push:
+    branches: [ main, master ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v3
+      
+      - name: Conectar a VPS y desplegar
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.VPS_PORT }}
+          script: |
+            cd ${{ secrets.APP_PATH }}
+            
+            ACTIVE=$(grep "server 127.0.0.1" /etc/nginx/sites-available/app.conf | grep -o "300[01]")
+            
+            if [ "$ACTIVE" = "3000" ]; then
+              DEPLOY_ENV="green"
+              DEPLOY_PORT="3001"
+            else
+              DEPLOY_ENV="blue"
+              DEPLOY_PORT="3000"
+            fi
+            
+            echo "Entorno activo: $ACTIVE"
+            echo "Desplegando en: $DEPLOY_ENV (puerto $DEPLOY_PORT)"
+            
+            git pull origin main
+            
+            chmod +x scripts/deploy.sh
+            ./scripts/deploy.sh $DEPLOY_ENV
+            
+            sleep 5
+            
+            if curl -s http://127.0.0.1:$DEPLOY_PORT/health > /dev/null 2>&1; then
+              echo "Health check exitoso"
+              
+              chmod +x scripts/switch.sh
+              ./scripts/switch.sh $DEPLOY_ENV
+              
+              echo "Despliegue completado"
+            else
+              echo "Health check fallido, revirtiendo"
+              chmod +x scripts/rollback.sh
+              ./scripts/rollback.sh
+              exit 1
+            fi
