@@ -35,7 +35,9 @@ jobs:
             echo "Entorno activo: $ACTIVE"
             echo "Desplegando en: $DEPLOY_ENV (puerto $DEPLOY_PORT)"
             
-            git pull origin main
+            git fetch origin main
+            git reset --hard origin/main
+
             
             chmod +x scripts/deploy.sh
             ./scripts/deploy.sh $DEPLOY_ENV
