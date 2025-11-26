@@ -25,7 +25,7 @@ docker build -t mi-app:latest .
 
 docker run -d \
     --name $CONTAINER_NAME \
-    -p $PORT:3000 \
+    -p $PORT:80 \
     --restart unless-stopped \
     mi-app:latest
 
