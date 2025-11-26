@@ -5,7 +5,7 @@ services:
       dockerfile: docker/blue/Dockerfile
     container_name: blue-app
     ports:
-      - "127.0.0.1:8081:80"   # Solo accesible desde la máquina host
+      - "127.0.0.1:8081:80"  
     restart: unless-stopped
     networks:
       - frontend
@@ -16,7 +16,7 @@ services:
       dockerfile: docker/green/Dockerfile
     container_name: green-app
     ports:
-      - "127.0.0.1:8082:80"   # Igual, solo host
+      - "127.0.0.1:8082:80"   
     restart: unless-stopped
     networks:
       - frontend
