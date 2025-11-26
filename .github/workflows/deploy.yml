@@ -55,4 +55,4 @@ jobs:
               ./scripts/rollback.sh
               exit 1
             fi
-          ssh_args: "-t"
+          #ssh_args: "-t"
