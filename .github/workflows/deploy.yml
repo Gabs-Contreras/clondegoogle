@@ -11,8 +11,8 @@ jobs:
     steps:
       - name: Checkout código
         uses: actions/checkout@v3
-      
-      - name: Conectar a VPS y desplegar
+
+      - name: Conectar a VPS y ejecutar despliegue
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.VPS_HOST }}
@@ -20,10 +20,13 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.VPS_PORT }}
           script: |
+            echo "🖥️ Entrando al servidor..."
             cd ${{ secrets.APP_PATH }}
 
-            # Detectar puerto activo actual
-            ACTIVE_PORT=$(grep "server 127.0.0.1" /etc/nginx/sites-available/app.conf | grep -o "300[12]")
+            echo "🔎 Detectando puerto activo en Nginx..."
+            ACTIVE_PORT=$(grep -A1 "upstream app_upstream" /etc/nginx/sites-available/app.conf | grep -o "300[12]")
+
+            echo "➡️ Puerto activo actual: $ACTIVE_PORT"
 
             if [ "$ACTIVE_PORT" = "3001" ]; then
               DEPLOY_ENV="green"
@@ -33,30 +36,27 @@ jobs:
               DEPLOY_PORT="3001"
             fi
 
-            echo "Entorno activo actual: $ACTIVE_PORT"
-            echo "Desplegando en: $DEPLOY_ENV ($DEPLOY_PORT)"
+            echo "🚀 Nuevo despliegue irá a: $DEPLOY_ENV en puerto $DEPLOY_PORT"
 
+            echo "📥 Actualizando código..."
             git fetch origin main
             git reset --hard origin/main
 
-            # 🔥 OTORGAR PERMISO A TODOS LOS SCRIPTS
+            echo "🔑 Dando permisos a scripts..."
             chmod +x scripts/*.sh
 
-            # Ejecutar deploy
+            echo "📦 Ejecutando deploy..."
             ./scripts/deploy.sh $DEPLOY_ENV
 
-            echo "Esperando al nuevo contenedor..."
+            echo "⏳ Esperando a que la app levante..."
             sleep 5
 
-            # Health check
+            echo "❤️ Realizando health check en $DEPLOY_PORT..."
             if curl -s http://127.0.0.1:$DEPLOY_PORT/health > /dev/null; then
-              echo "Health check exitoso"
-
-              # Cambiar tráfico
+              echo "✔️ Nuevo entorno saludable. Aplicando switch de Nginx..."
               ./scripts/switch.sh $DEPLOY_ENV
-
-              echo "Despliegue Blue-Green completado"
+              echo "🎉 Blue-Green Deployment completado con éxito"
             else
-              echo "Health check fallido, no se cambiará el tráfico"
+              echo "❌ Health check fallido. No se cambiará el tráfico."
               exit 1
             fi

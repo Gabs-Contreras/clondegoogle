@@ -1,17 +1,20 @@
 #!/bin/bash
-ENVIRONMENT=$1
+set -e
 
-if [ "$ENVIRONMENT" == "blue" ]; then
-    NEW_PORT=3001
-elif [ "$ENVIRONMENT" == "green" ]; then
-    NEW_PORT=3002
+NGINX_CONF="/etc/nginx/sites-available/app.conf"
+
+if [ "$1" = "blue" ]; then
+    TARGET_PORT=3001
 else
-    echo "ENV inválido"
-    exit 1
+    TARGET_PORT=3002
 fi
 
-sed -i "s/server 127.0.0.1:300[12]/server 127.0.0.1:$NEW_PORT/" /etc/nginx/sites-available/app.conf
+echo "⚙️ Cambiando tráfico a puerto $TARGET_PORT..."
 
-nginx -t && systemctl reload nginx
+sudo sed -i "/upstream app_upstream {/,/}/s/server 127.0.0.1:[0-9]*/server 127.0.0.1:$TARGET_PORT/" $NGINX_CONF
 
-echo "Ahora Nginx apunta a $ENVIRONMENT ($NEW_PORT)"
+sudo nginx -t || { echo "❌ Error: Configuración inválida"; exit 1; }
+
+sudo systemctl reload nginx
+
+echo "✔️ Tráfico cambiado a $TARGET_PORT"
