@@ -12,12 +12,12 @@ grep "server 127.0.0.1" /etc/nginx/sites-available/app.conf | grep -v "^#" | hea
 echo ""
 
 echo "Health checks:"
-echo -n "Blue (3000): "
-curl -s http://127.0.0.1:3000/health || echo "No responde"
-
-echo -n "Green (3001): "
+echo -n "Blue (3001): "
 curl -s http://127.0.0.1:3001/health || echo "No responde"
+
+echo -n "Green (3002): "
+curl -s http://127.0.0.1:3002/health || echo "No responde"
 echo ""
 
-echo "Servicio principal:"
+echo "Servicio principal (Nginx):"
 curl -s http://127.0.0.1/health > /dev/null && echo "Activo" || echo "Inactivo"

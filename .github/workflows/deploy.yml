@@ -21,40 +21,39 @@ jobs:
           port: ${{ secrets.VPS_PORT }}
           script: |
             cd ${{ secrets.APP_PATH }}
-            
-            ACTIVE=$(grep "server 127.0.0.1" /etc/nginx/sites-available/app.conf | grep -o "300[01]")
-            
-            if [ "$ACTIVE" = "3000" ]; then
+
+            # Detectar puerto activo en Nginx
+            ACTIVE_PORT=$(grep "server 127.0.0.1" /etc/nginx/sites-available/app.conf | grep -o "300[12]")
+
+            if [ "$ACTIVE_PORT" = "3001" ]; then
               DEPLOY_ENV="green"
-              DEPLOY_PORT="3001"
+              DEPLOY_PORT="3002"
             else
               DEPLOY_ENV="blue"
-              DEPLOY_PORT="3000"
+              DEPLOY_PORT="3001"
             fi
-            
-            echo "Entorno activo: $ACTIVE"
-            echo "Desplegando en: $DEPLOY_ENV (puerto $DEPLOY_PORT)"
-            
+
+            echo "Entorno activo actual: $ACTIVE_PORT"
+            echo "Desplegando en: $DEPLOY_ENV ($DEPLOY_PORT)"
+
             git fetch origin main
             git reset --hard origin/main
 
-            
             chmod +x scripts/deploy.sh
             ./scripts/deploy.sh $DEPLOY_ENV
-            
+
+            echo "Esperando al nuevo contenedor..."
             sleep 5
-            
-            if curl -s http://127.0.0.1:$DEPLOY_PORT/health > /dev/null 2>&1; then
+
+            # Health check
+            if curl -s http://127.0.0.1:$DEPLOY_PORT/health > /dev/null; then
               echo "Health check exitoso"
-              
+
               chmod +x scripts/switch.sh
               ./scripts/switch.sh $DEPLOY_ENV
-              
-              echo "Despliegue completado"
+
+              echo "Despliegue Blue-Green completado"
             else
-              echo "Health check fallido, revirtiendo"
-              chmod +x scripts/rollback.sh
-              ./scripts/rollback.sh
+              echo "Health check fallido, no se cambiará el tráfico"
               exit 1
             fi
-          #ssh_args: "-t"

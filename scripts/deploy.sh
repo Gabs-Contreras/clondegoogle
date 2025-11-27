@@ -2,14 +2,12 @@
 set -e
 
 ENVIRONMENT=$1
-PORT=""
-CONTAINER_NAME=""
 
 if [ "$ENVIRONMENT" == "blue" ]; then
-    PORT=3000
+    PORT=3001
     CONTAINER_NAME="app-blue"
 elif [ "$ENVIRONMENT" == "green" ]; then
-    PORT=3001
+    PORT=3002
     CONTAINER_NAME="app-green"
 else
     echo "Uso: ./deploy.sh [blue|green]"
