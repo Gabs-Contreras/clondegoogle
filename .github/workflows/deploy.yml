@@ -20,13 +20,13 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.VPS_PORT }}
           script: |
-            echo "🖥️ Entrando al servidor..."
+            echo " Entrando al servidor..."
             cd ${{ secrets.APP_PATH }}
 
-            echo "🔎 Detectando puerto activo en Nginx..."
+            echo " Detectando puerto activo en Nginx..."
             ACTIVE_PORT=$(grep -A1 "upstream app_upstream" /etc/nginx/sites-available/app.conf | grep -o "300[12]")
 
-            echo "➡️ Puerto activo actual: $ACTIVE_PORT"
+            echo " Puerto activo actual: $ACTIVE_PORT"
 
             if [ "$ACTIVE_PORT" = "3001" ]; then
               DEPLOY_ENV="green"
@@ -36,27 +36,27 @@ jobs:
               DEPLOY_PORT="3001"
             fi
 
-            echo "🚀 Nuevo despliegue irá a: $DEPLOY_ENV en puerto $DEPLOY_PORT"
+            echo " Nuevo despliegue irá a: $DEPLOY_ENV en puerto $DEPLOY_PORT"
 
-            echo "📥 Actualizando código..."
+            echo " Actualizando código..."
             git fetch origin main
             git reset --hard origin/main
 
-            echo "🔑 Dando permisos a scripts..."
+            echo " Dando permisos a scripts..."
             chmod +x scripts/*.sh
 
-            echo "📦 Ejecutando deploy..."
+            echo " Ejecutando deploy..."
             ./scripts/deploy.sh $DEPLOY_ENV
 
-            echo "⏳ Esperando a que la app levante..."
+            echo " Esperando a que la app levante..."
             sleep 5
 
-            echo "❤️ Realizando health check en $DEPLOY_PORT..."
+            echo " Realizando health check en $DEPLOY_PORT..."
             if curl -s http://127.0.0.1:$DEPLOY_PORT/health > /dev/null; then
-              echo "✔️ Nuevo entorno saludable. Aplicando switch de Nginx..."
+              echo " Nuevo entorno saludable. Aplicando switch de Nginx..."
               ./scripts/switch.sh $DEPLOY_ENV
-              echo "🎉 Blue-Green Deployment completado con éxito"
+              echo " Blue-Green Deployment completado con éxito"
             else
-              echo "❌ Health check fallido. No se cambiará el tráfico."
+              echo " Health check fallido. No se cambiará el tráfico."
               exit 1
             fi
