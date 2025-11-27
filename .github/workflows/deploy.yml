@@ -22,7 +22,7 @@ jobs:
           script: |
             cd ${{ secrets.APP_PATH }}
 
-            # Detectar puerto activo en Nginx
+            # Detectar puerto activo actual
             ACTIVE_PORT=$(grep "server 127.0.0.1" /etc/nginx/sites-available/app.conf | grep -o "300[12]")
 
             if [ "$ACTIVE_PORT" = "3001" ]; then
@@ -39,7 +39,10 @@ jobs:
             git fetch origin main
             git reset --hard origin/main
 
-            chmod +x scripts/deploy.sh
+            # 🔥 OTORGAR PERMISO A TODOS LOS SCRIPTS
+            chmod +x scripts/*.sh
+
+            # Ejecutar deploy
             ./scripts/deploy.sh $DEPLOY_ENV
 
             echo "Esperando al nuevo contenedor..."
@@ -49,7 +52,7 @@ jobs:
             if curl -s http://127.0.0.1:$DEPLOY_PORT/health > /dev/null; then
               echo "Health check exitoso"
 
-              chmod +x scripts/switch.sh
+              # Cambiar tráfico
               ./scripts/switch.sh $DEPLOY_ENV
 
               echo "Despliegue Blue-Green completado"
