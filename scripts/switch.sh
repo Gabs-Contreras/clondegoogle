@@ -9,11 +9,11 @@ else
     TARGET_PORT=3002
 fi
 
-echo "⚙️ Cambiando tráfico a puerto $TARGET_PORT..."
+echo " Cambiando tráfico a puerto $TARGET_PORT..."
 
 sudo sed -i "/upstream app_upstream {/,/}/s/server 127.0.0.1:[0-9]*/server 127.0.0.1:$TARGET_PORT/" $NGINX_CONF
 
-sudo nginx -t || { echo "❌ Error: Configuración inválida"; exit 1; }
+sudo nginx -t || { echo " Error: Configuración inválida"; exit 1; }
 
 sudo systemctl reload nginx
 
