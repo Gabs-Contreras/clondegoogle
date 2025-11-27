@@ -8,7 +8,7 @@ docker ps --filter "name=app-" --format "table {{.Names}}\t{{.Status}}\t{{.Ports
 echo ""
 
 echo "Nginx - Upstream activo:"
-grep "server 127.0.0.1" /etc/nginx/sites-available/app.conf | grep -v "^#" | head -1
+grep -A1 "upstream app_upstream" /etc/nginx/sites-available/app.conf | grep "server"
 echo ""
 
 echo "Health checks:"
