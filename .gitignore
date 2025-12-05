@@ -4,6 +4,9 @@ node_modules/
 # Build de Vite
 dist/
 
+# Testing
+coverage/
+
 # Archivos de logs
 npm-debug.log*
 yarn-debug.log*
