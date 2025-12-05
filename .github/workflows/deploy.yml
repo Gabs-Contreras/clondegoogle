@@ -10,10 +10,10 @@ jobs:
 
     steps:
       - name: Checkout código
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Configurar Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: '18'
           cache: 'npm'
@@ -25,7 +25,7 @@ jobs:
         run: npm run test:ci
 
       - name: Subir reporte de cobertura
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: coverage-report
@@ -35,10 +35,10 @@ jobs:
   deploy:
     needs: test
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout código
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Conectar a VPS y ejecutar despliegue
         uses: appleboy/ssh-action@master
