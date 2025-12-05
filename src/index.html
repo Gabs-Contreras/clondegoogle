@@ -7,8 +7,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="css/estilos.css" rel="stylesheet">
     <title>Clon de  Google</title>
+    <style>
+        .env-badge {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            padding: 5px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            color: white;
+            z-index: 9999;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .env-blue { background-color: #0066cc; }
+        .env-green { background-color: #28a745; }
+        .env-dev { background-color: #6c757d; }
+    </style>
 </head>
 <body>
+    <!-- Environment Badge -->
+    <div class="env-badge env-__ENV_COLOR__" id="envBadge">
+        __ENV_NAME__
+    </div>
     <!---->
     <header>
         <nav>

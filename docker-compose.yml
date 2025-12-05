@@ -2,6 +2,8 @@ services:
   blue-app:
     build: .
     container_name: blue-app
+    environment:
+      - ENVIRONMENT=blue
     ports:
       - "127.0.0.1:8081:80"
     restart: unless-stopped
@@ -11,6 +13,8 @@ services:
   green-app:
     build: .
     container_name: green-app
+    environment:
+      - ENVIRONMENT=green
     ports:
       - "127.0.0.1:8082:80"
     restart: unless-stopped
