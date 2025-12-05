@@ -14,7 +14,7 @@ class GoogleSearch {
    * @returns {object} - {isValid: boolean, error: string}
    */
   validateSearch(query) {
-    if (!query || typeof query !== 'string') {
+    if (typeof query !== 'string') {
       return { isValid: false, error: 'El término de búsqueda es requerido' };
     }
 
