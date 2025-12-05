@@ -7,7 +7,7 @@ module.exports = {
     '!coverage/**'
   ],
   testMatch: [
-    'test/**/*.test.js'
+    '<rootDir>/test/**/*.test.js'
   ],
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   verbose: true
