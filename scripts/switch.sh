@@ -17,4 +17,4 @@ sudo nginx -t || { echo " Error: Configuración inválida"; exit 1; }
 
 sudo systemctl reload nginx
 
-echo "✔️ Tráfico cambiado a $TARGET_PORT"
+echo "Tráfico cambiado a $TARGET_PORT"
